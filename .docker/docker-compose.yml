@@ -1,0 +1,28 @@
+version: '3'
+
+services: 
+    db:
+        image: mysql:8.0
+        environment: 
+            - MYSQL_USER=root
+            - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+            - MYSQL_DATABASE=k15
+        ports: 
+            - 3306:3306
+        volumes:
+            - ./db_data:/var/lib/mysql
+
+    app:
+        image: pizelli/webserver:1.1
+        volumes:
+            - ./.docker/vhost.conf:/etc/apache2/sites-available/000-default.conf
+            - ./.docker/php-config.ini:/etc/php/7.4/apache2/conf.d/php-config.ini
+            - ./:/var/www/html
+        ports: 
+            - 8000:80
+        links: 
+            - db
+        depends_on: 
+            - db
+        tty: true
+        
